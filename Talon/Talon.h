@@ -6,7 +6,7 @@
 //  Copyright © 2019 Mike Kinney. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for Talon.
 FOUNDATION_EXPORT double TalonVersionNumber;
