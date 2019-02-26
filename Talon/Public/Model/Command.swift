@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import os.log
 
 /// Base class for all supported commands. Subclasses are responsible for
 /// providing the command name and an array of values that when combined can

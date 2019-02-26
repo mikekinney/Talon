@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import os.log
 
 /// The Connection class sends Commands to a Tile38 server.
 public class Connection {
