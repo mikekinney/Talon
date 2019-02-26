@@ -14,7 +14,7 @@ Use
 
 Connection
 ----------
-Use the `Connection` class to send `Commands` asynchronously. Connection instances can be reused to send multiple commands. See the [Tile38 commands](https://tile38.com/commands/) for additional documentation.
+Use the `Connection` class to send `Commands` asynchronously. `Connection` instances can be reused to send multiple commands. See the [Tile38 commands](https://tile38.com/commands/) for additional documentation.
 
 ```swift
 // Setup a Connection instance.
@@ -106,8 +106,8 @@ Supported Commands
 - [x] TTL
 - [x] WITHIN
 
-Third Party
------------
+Dependencies
+------------
 * [CodableGeoJSON](https://github.com/guykogus/CodableGeoJSON)
 * [CodableDictionary](https://github.com/mleiv/CodableDictionary)
 * [Starscream](https://github.com/daltoniam/Starscream)
