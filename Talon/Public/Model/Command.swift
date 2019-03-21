@@ -15,10 +15,14 @@ public class Command {
     public struct Coordinate {
         let lat: Double
         let lon: Double
+        public init(lat: Double, lon: Double) {
+            self.lat = lat
+            self.lon = lon
+        }
     }
     
     public enum Shape {
-        case bounds(swLat: Double, swLon: Double, neLat: Double, neLon: Double)
+        case bounds(swCoordinate: Command.Coordinate, neCoordinate: Command.Coordinate)
         case object(geoJSON: GeoJSON)
     }
     
@@ -229,8 +233,8 @@ extension Command {
     fileprivate static func values(for shape: Command.Shape) -> [String] {
         var values: [String] = []
         switch shape {
-        case .bounds(let swLat, let swLon, let neLat, let neLon):
-            values.append(contentsOf: ["BOUNDS", "\(swLat)", "\(swLon)", "\(neLat)", "\(neLon)"])
+        case .bounds(let swCoordinate, let neCoordinate):
+            values.append(contentsOf: ["BOUNDS", "\(swCoordinate.lat)", "\(swCoordinate.lon)", "\(neCoordinate.lat)", "\(neCoordinate.lon)"])
         case .object(let geoJSON):
             values.append(contentsOf: ["OBJECT", geoJSON.JSONString])
         }

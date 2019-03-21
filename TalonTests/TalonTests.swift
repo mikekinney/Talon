@@ -341,7 +341,9 @@ class TalonTests: XCTestCase {
     
     func testIntersects() {
         let expect = expectation(description: "Expect success")
-        let command = Command.Intersects(key: "fleet", shape: Command.Shape.bounds(swLat: 33.462, swLon: -112.268, neLat: 33.491, neLon: -112.245))
+        let sw = Command.Coordinate(lat: 33.462, lon: -112.268)
+        let ne = Command.Coordinate(lat: 33.491, lon: -112.245)
+        let command = Command.Intersects(key: "fleet", shape: Command.Shape.bounds(swCoordinate: sw, neCoordinate: ne))
         TalonTests.connection.list(command: command, success: { (response, objects) in
             expect.fulfill()
         }, failure: { (error) in
