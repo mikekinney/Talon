@@ -227,6 +227,7 @@ extension Command {
             public var match: [String]?
             public var noFields: Bool?
             public var limit: Int?
+            public init() {}
         }
     }
     
