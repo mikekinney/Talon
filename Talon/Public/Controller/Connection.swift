@@ -71,13 +71,13 @@ public class Connection {
         return response
     }
     
-    private func perform<R:Codable>(command: Command, success: @escaping(_ response: R)->Void, failure: @escaping(Error)->Void) {
+    private func perform<R:Codable>(command: Command, success: @escaping(_ response: R)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
         let request: URLRequest
         do {
             request = try urlRequestFor(command: command)
         } catch {
             failure(error)
-            return
+            return nil
         }
         Log.debug(message: "Perform Command: " + (request.url?.absoluteString ?? "null"))
         let task = urlSession.dataTask(with: request) { [weak self] (data, urlResponse, error) in
@@ -111,6 +111,7 @@ public class Connection {
             }
         }
         task.resume()
+        return task
     }
     
     fileprivate func geoJSONObject(from dictionary: Dictionary<String,Any>) throws -> GeoJSON {
@@ -123,20 +124,23 @@ public class Connection {
     
     // MARK: - GET Commands
     
-    public func get(command: Command.Get.Bound, success:@escaping(GetBoundsResponse)->Void, failure:@escaping(Error)->Void) {
-        perform(command: command, success: { (response: GetBoundsResponse) in
+    @discardableResult
+    public func get(command: Command.Get.Bound, success:@escaping(GetBoundsResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: GetBoundsResponse) in
             success(response)
         }, failure: failure)
     }
 
-    public func get(command: Command.Get.Hash, success: @escaping(GetHashResponse)->Void, failure:@escaping(Error)->Void) {
-        perform(command: command, success: { (response: GetHashResponse) in
+    @discardableResult
+    public func get(command: Command.Get.Hash, success: @escaping(GetHashResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: GetHashResponse) in
             success(response)
         }, failure: failure)
     }
 
-    public func get(command: Command.Get.Object, success: @escaping(GeoJSON, [String:Any]?)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { [weak self] (response: GetObjectResponse) in
+    @discardableResult
+    public func get(command: Command.Get.Object, success: @escaping(GeoJSON, [String:Any]?)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { [weak self] (response: GetObjectResponse) in
             guard let strongSelf = self else {
                 failure(Failure.unexpectedError)
                 return
@@ -157,16 +161,18 @@ public class Connection {
         }, failure: failure)
     }
     
-    public func get(command: Command.Get.Point, success:@escaping(GetPointResponse)->Void, failure:@escaping(Error)->Void) {
-        perform(command: command, success: { (response: GetPointResponse) in
+    @discardableResult
+    public func get(command: Command.Get.Point, success:@escaping(GetPointResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: GetPointResponse) in
             success(response)
         }, failure: failure)
     }
     
     // MARK: - List Commands
     
-    public func list(command: Command.ObjectList, success: @escaping(ObjectListResponse, [GeoJSON])->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { [weak self] (response: ObjectListResponse) in
+    @discardableResult
+    public func list(command: Command.ObjectList, success: @escaping(ObjectListResponse, [GeoJSON])->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { [weak self] (response: ObjectListResponse) in
             guard let strongSelf = self else {
                 failure(Failure.unexpectedError)
                 return
@@ -188,34 +194,39 @@ public class Connection {
 
     // MARK: - OK Commands
     
-    public func send(command: Command.OK, success: @escaping(OkResponse)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { (response: OkResponse) in
+    @discardableResult
+    public func send(command: Command.OK, success: @escaping(OkResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: OkResponse) in
             success(response)
         }, failure: failure)
     }
     
     // MARK: - Ungrouped Commands
     
-    public func bounds(command: Command.Bounds, success: @escaping(BoundsResponse)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { (response: BoundsResponse) in
+    @discardableResult
+    public func bounds(command: Command.Bounds, success: @escaping(BoundsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: BoundsResponse) in
             success(response)
         }, failure: failure)
     }
     
-    public func keys(command: Command.Keys, success: @escaping(KeysResponse)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { (response: KeysResponse) in
+    @discardableResult
+    public func keys(command: Command.Keys, success: @escaping(KeysResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: KeysResponse) in
             success(response)
         }, failure: failure)
     }
     
-    public func stats(command: Command.Stats, success: @escaping(StatsResponse)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { (response: StatsResponse) in
+    @discardableResult
+    public func stats(command: Command.Stats, success: @escaping(StatsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: StatsResponse) in
             success(response)
         }, failure: failure)
     }
     
-    public func ttl(command: Command.TTL, success: @escaping(TTLResponse)->Void, failure: @escaping(Error)->Void) {
-        perform(command: command, success: { (response: TTLResponse) in
+    @discardableResult
+    public func ttl(command: Command.TTL, success: @escaping(TTLResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command, success: { (response: TTLResponse) in
             success(response)
         }, failure: failure)
     }
