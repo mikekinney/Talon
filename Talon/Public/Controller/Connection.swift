@@ -71,7 +71,16 @@ public class Connection {
         return response
     }
     
-    private func perform<R:Codable>(command: Command, success: @escaping(_ response: R)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+    fileprivate func geoJSONObject(from dictionary: Dictionary<String,Any>) throws -> GeoJSON {
+        let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
+        let geoJSON = try JSONDecoder().decode(GeoJSON.self, from: data)
+        return geoJSON
+    }
+    
+    // MARK: - Public
+    
+    @discardableResult
+    public func perform<R:Codable>(command: Command, success: @escaping(_ response: R)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
         let request: URLRequest
         do {
             request = try urlRequestFor(command: command)
@@ -113,14 +122,6 @@ public class Connection {
         task.resume()
         return task
     }
-    
-    fileprivate func geoJSONObject(from dictionary: Dictionary<String,Any>) throws -> GeoJSON {
-        let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
-        let geoJSON = try JSONDecoder().decode(GeoJSON.self, from: data)
-        return geoJSON
-    }
-    
-    // MARK: - Public
     
     // MARK: - GET Commands
     

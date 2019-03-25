@@ -464,6 +464,17 @@ class TalonTests: XCTestCase {
             expect.fulfill()
         })
         wait(for: [expect], timeout: 10)
-
+    }
+    
+    func testIDs() {
+        let expect = expectation(description: "Expect success")
+        let command = Command(name: "SCAN", values: ["FLEET", "IDS"])
+        TalonTests.connection.perform(command: command, success: { (response: IDsResponse) in
+            expect.fulfill()
+        }, failure: { (error) in
+            XCTFail("Failed: \(error)")
+            expect.fulfill()
+        })
+        wait(for: [expect], timeout: 10)
     }
 }

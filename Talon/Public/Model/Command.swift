@@ -33,7 +33,7 @@ public class Command {
         return raw.joined(separator: "+")
     }
     
-    init(name: String, values: [String]) {
+    public init(name: String, values: [String]) {
         self.name = name
         var array = values
         array.insert(name, at: 0)

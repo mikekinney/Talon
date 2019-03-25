@@ -66,6 +66,13 @@ public struct KeysResponse: Codable {
     public let keys: [String]
 }
 
+public struct IDsResponse: Codable {
+    public let ok: Bool
+    public let ids: [String]
+    public let count: Int
+    public let cursor: Int
+}
+
 public struct StatsResponse: Codable {
     public struct Stats: Codable {
         public let in_memory_size: Int
