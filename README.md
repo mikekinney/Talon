@@ -1,7 +1,7 @@
 Talon
 =====
 
-Talon is a proof of concept [Tile38](https://tile38.com) client framework for iOS and macOS. Not all commands are supported.
+Talon is a proof of concept [Tile38](https://tile38.com) client framework for iOS and macOS. Not all commands are supported. The API is not stable.
 
 Use
 ---
@@ -14,23 +14,25 @@ Use
 
 Connection
 ----------
-Use the `Connection` class to send `Commands` asynchronously. `Connection` instances can be reused to send multiple commands. See the [Tile38 commands](https://tile38.com/commands/) for additional documentation.
+Use the `Connection` class to perform `Commands` asynchronously. `Connection` instances can be reused to send multiple commands. See the [Tile38 commands](https://tile38.com/commands/) for additional documentation.
+
+Performing a `command` requires an understanding of the expected result. Providing an incorrect `response` value to the `success` closure will result in the `error` closure being called.
 
 ```swift
 // Setup a Connection instance.
-let connection = Connection(host: "192.168.0.2", port: 9851)
+let connection = Connection(host: "192.168.0.2")
 
 // Get geojson object 'truck1' from 'fleet'
-let getTruckObject = Command.Get.Object(key: "fleet", id: "truck1", withFields: true)
-connection.get(command: getTruckObject, success: { (geoJSON, fields) in
-  // Do something with the geoJSON object
+let getTruckObject = Command.Get(key: "fleet", id: "truck1", withFields: true, format: .object)
+connection.perform(command: command, success: { (response: GetObjectResponse) in
+  // Do something with the response
 }, failure: { (error) in
   // Do something with the error
 })
 
 // Get just the point (lat, long) of 'truck1' from 'fleet'
-let getTruckPoint = Command.Get.Point(key: "fleet", id: "truck1", withFields: true)
-connection.get(command: getTruckPoint, success: { (response) in
+let getTruckPoint = Command.Get.Point(key: "fleet", id: "truck1", withFields: true, format: .point)
+connection.get(command: getTruckPoint, success: { (response: GetPointResponse) in
   // Do something with the point
 }, failure: { (error) in
   // Do something with the error

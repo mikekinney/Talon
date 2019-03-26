@@ -34,12 +34,12 @@ public class Connection {
     ///   - secure: Flag to indicate whether or not to use HTTPS. Default is
     ///   false.
     ///   - configuration: The URLSessionConfiguration to use when sending
-    ///  commands. Default is ephemeral.
+    ///  commands. Default is URLSessionConfiguration.default.
     public init(host: String, port: Int = 9851, secure: Bool? = false, configuration: URLSessionConfiguration? = nil) {
         self.host = host
         self.port = port
         self.secure = secure ?? false
-        let config = configuration ?? URLSessionConfiguration.ephemeral
+        let config = configuration ?? URLSessionConfiguration.default
         urlSession = URLSession(configuration: config)
     }
 
@@ -69,12 +69,6 @@ public class Connection {
         }
         let response = try JSONDecoder().decode(R.self, from: data)
         return response
-    }
-    
-    fileprivate func geoJSONObject(from dictionary: Dictionary<String,Any>) throws -> GeoJSON {
-        let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
-        let geoJSON = try JSONDecoder().decode(GeoJSON.self, from: data)
-        return geoJSON
     }
     
     // MARK: - Public
@@ -122,77 +116,12 @@ public class Connection {
         task.resume()
         return task
     }
-    
-    // MARK: - GET Commands
-    
-    @discardableResult
-    public func get(command: Command.Get.Bound, success:@escaping(GetBoundsResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: GetBoundsResponse) in
-            success(response)
-        }, failure: failure)
-    }
+}
 
-    @discardableResult
-    public func get(command: Command.Get.Hash, success: @escaping(GetHashResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: GetHashResponse) in
-            success(response)
-        }, failure: failure)
-    }
+// MARK: - Convenience
 
-    @discardableResult
-    public func get(command: Command.Get.Object, success: @escaping(GeoJSON, [String:Any]?)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { [weak self] (response: GetObjectResponse) in
-            guard let strongSelf = self else {
-                failure(Failure.unexpectedError)
-                return
-            }
-            let jsonDict = response.object.dictionary as [String:Any]
-            let geoJSON: GeoJSON
-            do {
-                geoJSON = try strongSelf.geoJSONObject(from: jsonDict)
-            } catch {
-                failure(error)
-                return
-            }
-            if let fields = response.fields?.dictionary {
-                success(geoJSON, fields as [String:Any])
-            } else {
-                success(geoJSON, nil)
-            }
-        }, failure: failure)
-    }
+extension Connection {
     
-    @discardableResult
-    public func get(command: Command.Get.Point, success:@escaping(GetPointResponse)->Void, failure:@escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: GetPointResponse) in
-            success(response)
-        }, failure: failure)
-    }
-    
-    // MARK: - List Commands
-    
-    @discardableResult
-    public func list(command: Command.ObjectList, success: @escaping(ObjectListResponse, [GeoJSON])->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { [weak self] (response: ObjectListResponse) in
-            guard let strongSelf = self else {
-                failure(Failure.unexpectedError)
-                return
-            }
-            var jsonObjects: [GeoJSON] = []
-            response.objects.forEach({ (codableDictionary) in
-                let dict = codableDictionary.dictionary as [String:Any]
-                guard let obj = dict["object"] as? [String:Any] else { return }
-                do {
-                    let feature = try strongSelf.geoJSONObject(from: obj)
-                    jsonObjects.append(feature)
-                } catch {
-                    Log.debug(message: "Unable to parse GeoJSON object \(obj)")
-                }
-            })
-            success(response, jsonObjects)
-        }, failure: failure)
-    }
-
     // MARK: - OK Commands
     
     @discardableResult

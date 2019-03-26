@@ -15,9 +15,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let scan = Command.Scan(key: "fleet")
-        ViewController.connection.list(command: scan, success: { (response, objects) in
-            print("Objects: \(objects)")
+        let scan = Command.ObjectList.Scan(key: "fleet")
+        ViewController.connection.perform(command: scan, success: { (response: ListObjectsResponse) in
+            print("Response: \(response)")
         }, failure: { (error) in
             print("Error: \(error)")
         })

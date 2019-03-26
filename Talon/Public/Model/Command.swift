@@ -45,7 +45,7 @@ public class Command {
 
 extension Command {
     public class Get: Command {
-        enum Format {
+        public enum Format {
             case object
             case point
             case bounds
@@ -71,36 +71,13 @@ extension Command {
             }
         }
 
-        fileprivate init(key: String, id: String, withFields: Bool, format: Command.Get.Format) {
+        public init(key: String, id: String, withFields: Bool, format: Command.Get.Format) {
             var array = [key, id]
             if withFields {
                 array.append("WITHFIELDS")
             }
             array.append(format.string)
             super.init(name: "GET", values: array)
-        }
-        public class Bound: Get {
-            public init(key: String, id: String, withFields: Bool) {
-                super.init(key: key, id: id, withFields: withFields, format: .bounds)
-            }
-        }
-        
-        public class Hash: Get {
-            public init(key: String, id: String, withFields: Bool, precision: Int) {
-                super.init(key: key, id: id, withFields: withFields, format: .hash(precision))
-            }
-        }
-        
-        public class Object: Get {
-            public init(key: String, id: String, withFields: Bool) {
-                super.init(key: key, id: id, withFields: withFields, format: .object)
-            }
-        }
-        
-        public class Point: Get {
-            public init(key: String, id: String, withFields: Bool) {
-                super.init(key: key, id: id, withFields: withFields, format: .point)
-            }
         }
     }
 }
@@ -220,13 +197,42 @@ extension Command {
             }
         }
         
+        public enum Format {
+            case objects
+            case points
+            case bounds
+            case hash(Int)
+            var string: String {
+                switch self {
+                case .objects:
+                    return "OBJECTS"
+                case .points:
+                    return "POINTS"
+                case .bounds:
+                    return "BOUNDS"
+                case .hash(let val):
+                    // Hash val must be between 1 and 22.
+                    guard val >= 1 else {
+                        return "HASH 1"
+                    }
+                    guard val <= 22 else {
+                        return "HASH 22"
+                    }
+                    return "HASH \(val)"
+                }
+            }
+        }
+        
         public struct Options {
+            // Options added here must be handled by values(for options:)
+            public var cursor: Int?
+            public var limit: Int?
             public var sparse: Int?
+            public var match: [String]?
             public var whereFilters: [Where]?
             public var whereInFilters: [WhereIn]?
-            public var match: [String]?
             public var noFields: Bool?
-            public var limit: Int?
+            public var format: Command.ObjectList.Format?
             public init() {}
         }
     }
@@ -244,8 +250,26 @@ extension Command {
     
     fileprivate static func values(for options: Command.ObjectList.Options) -> [String] {
         var values: [String] = []
+        if let cursor = options.cursor {
+            let string = "CURSOR \(cursor)"
+            values.append(string)
+        }
+        if let limit = options.limit {
+            if options.sparse == nil {
+                let string = "LIMIT \(limit)"
+                values.append(string)
+            } else {
+                Log.debug(message: "LIMIT option ignored when SPARSE value is set")
+            }
+        }
         if let sparse = options.sparse {
             values.append(contentsOf: ["SPARSE \(sparse)"])
+        }
+        if let matchFilters = options.match {
+            matchFilters.forEach { (match) in
+                let string = "MATCH \(match)"
+                values.append(string)
+            }
         }
         if let whereFilters = options.whereFilters {
             whereFilters.forEach { (filter) in
@@ -257,24 +281,13 @@ extension Command {
                 values.append(filter.asString)
             }
         }
-        if let matchFilters = options.match {
-            matchFilters.forEach { (match) in
-                let string = "MATCH \(match)"
-                values.append(string)
-            }
-        }
         if let noFields = options.noFields {
             if noFields == true {
                 values.append("NOFIELDS")
             }
         }
-        if let limit = options.limit {
-            if options.sparse == nil {
-                let string = "LIMIT \(limit)"
-                values.append(string)
-            } else {
-                Log.debug(message: "LIMIT option ignored when SPARSE value is set")
-            }
+        if let format = options.format {
+            values.append(format.string)
         }
         return values
     }

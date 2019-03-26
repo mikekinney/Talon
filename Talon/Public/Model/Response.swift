@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - Generic Responses
+
 public struct Response: Codable {
     public struct Point: Codable {
         public let lat: Double
@@ -18,6 +20,8 @@ public struct Response: Codable {
         public let ne: Point
     }
 }
+
+// MARK: - Convenience Responses
 
 public struct OkResponse: Codable {
     public let ok: Bool
@@ -31,34 +35,6 @@ public struct BoundsResponse: Codable {
     }
     public let ok: Bool
     public let bounds: Bounds
-}
-
-public struct GetObjectResponse: Codable {
-    public let object: CodableDictionary
-    public let fields: CodableDictionary?
-}
-
-public struct GetPointResponse: Codable {
-    public let point: Response.Point
-    public let fields: CodableDictionary?
-}
-
-public struct GetBoundsResponse: Codable {
-    public let bounds: Response.Bounds
-    public let fields: CodableDictionary?
-}
-
-public struct GetHashResponse: Codable {
-    public let hash: String
-    public let fields: CodableDictionary?
-}
-
-public struct ObjectListResponse: Codable {
-    public let ok: Bool
-    public let fields: [String]?
-    public let objects: [CodableDictionary]
-    public let count: Int
-    public let cursor: Int
 }
 
 public struct KeysResponse: Codable {
@@ -88,6 +64,8 @@ public struct TTLResponse: Codable {
     public let ttl: Int
 }
 
+// MARK: - Fence Response
+
 public struct FenceUpdateResponse: Codable {
     let command: String
     let group: String
@@ -96,4 +74,78 @@ public struct FenceUpdateResponse: Codable {
     let time: Date
     let id: String
     let object: GeoJSON
+}
+
+// MARK: - Get Responses
+
+public struct GetObjectResponse: Codable {
+    public let object: CodableDictionary
+    public let fields: CodableDictionary?
+}
+
+public struct GetPointResponse: Codable {
+    public let point: Response.Point
+    public let fields: CodableDictionary?
+}
+
+public struct GetBoundsResponse: Codable {
+    public let bounds: Response.Bounds
+    public let fields: CodableDictionary?
+}
+
+public struct GetHashResponse: Codable {
+    public let hash: String
+    public let fields: CodableDictionary?
+}
+
+// MARK: - List Responses
+
+public struct ListObjectsResponse: Codable {
+    public let ok: Bool
+    public let fields: [String]?
+    public let objects: [CodableDictionary]
+    public let count: Int
+    public let cursor: Int
+}
+
+public struct ListPointsResponse: Codable {
+    public struct Point: Codable {
+        public let id: String
+        public let point: Response.Point
+    }
+    public let ok: Bool
+    public let fields: [String]?
+    public let points: [ListPointsResponse.Point]
+    public let count: Int
+    public let cursor: Int
+}
+
+public struct ListCountResponse: Codable {
+    public let ok: Bool
+    public let count: Int
+    public let cursor: Int
+}
+
+public struct ListBoundsResponse: Codable {
+    public struct Bounds: Codable {
+        public let id: String
+        public let bounds: Response.Bounds
+    }
+    public let ok: Bool
+    public let fields: [String]?
+    public let bounds: [ListBoundsResponse.Bounds]
+    public let count: Int
+    public let cursor: Int
+}
+
+public struct ListHashesResponse: Codable {
+    public struct Hash: Codable {
+        public let id: String
+        public let hash: String
+    }
+    public let ok: Bool
+    public let fields: [String]?
+    public let hashes: [ListHashesResponse.Hash]
+    public let count: Int
+    public let cursor: Int
 }

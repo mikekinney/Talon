@@ -15,8 +15,8 @@ class TalonTests: XCTestCase {
     
     func testGetBounds() {
         let expect = expectation(description: "Expect success")
-        let command = Command.Get.Bound(key: "fleet", id: "point", withFields: false)
-        TalonTests.connection.get(command: command, success: { (response) in
+        let command = Command.Get(key: "fleet", id: "point", withFields: false, format: .bounds)
+        TalonTests.connection.perform(command: command, success: { (response: GetBoundsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -27,8 +27,8 @@ class TalonTests: XCTestCase {
     
     func testGetHash() {
         let expect = expectation(description: "Expect success")
-        let command = Command.Get.Hash(key: "fleet", id: "point", withFields: false, precision: 10)
-        TalonTests.connection.get(command: command, success: { (response) in
+        let command = Command.Get(key: "fleet", id: "point", withFields: false, format: .hash(10))
+        TalonTests.connection.perform(command: command, success: { (response: GetHashResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -39,8 +39,8 @@ class TalonTests: XCTestCase {
     
     func testGetObject() {
         let expect = expectation(description: "Expect success")
-        let command = Command.Get.Object(key: "fleet", id: "point", withFields: true)
-        TalonTests.connection.get(command: command, success: { (geoJSON, fields) in
+        let command = Command.Get(key: "fleet", id: "point", withFields: true, format: .object)
+        TalonTests.connection.perform(command: command, success: { (response: GetObjectResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -51,8 +51,8 @@ class TalonTests: XCTestCase {
     
     func testGetPoint() {
         let expect = expectation(description: "Expect success")
-        let command = Command.Get.Point(key: "fleet", id: "point", withFields: false)
-        TalonTests.connection.get(command: command, success: { (response) in
+        let command = Command.Get(key: "fleet", id: "point", withFields: false, format: .point)
+        TalonTests.connection.perform(command: command, success: { (response: GetPointResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -344,7 +344,7 @@ class TalonTests: XCTestCase {
         let sw = Command.Coordinate(lat: 33.462, lon: -112.268)
         let ne = Command.Coordinate(lat: 33.491, lon: -112.245)
         let command = Command.Intersects(key: "fleet", shape: Command.Shape.bounds(swCoordinate: sw, neCoordinate: ne))
-        TalonTests.connection.list(command: command, success: { (response, objects) in
+        TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -356,7 +356,8 @@ class TalonTests: XCTestCase {
     func testNearby() {
         let expect = expectation(description: "Expect success")
         let command = Command.Nearby(key: "fleet", point: Command.Coordinate(lat: 33.5123, lon: -112.2693), distance: 6000)
-        TalonTests.connection.list(command: command, success: { (response, objects) in
+        
+        TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -368,7 +369,7 @@ class TalonTests: XCTestCase {
     func testScan() {
         let expect = expectation(description: "Expect success")
         let command = Command.Scan(key: "fleet")
-        TalonTests.connection.list(command: command, success: { (response, objects) in
+        TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -380,7 +381,7 @@ class TalonTests: XCTestCase {
     func testSearch() {
         let expect = expectation(description: "Expect success")
         let command = Command.Search(key: "fleet", match: "speed", order: .ascending)
-        TalonTests.connection.list(command: command, success: { (response, objects) in
+        TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
@@ -409,7 +410,7 @@ class TalonTests: XCTestCase {
         var options = Command.ObjectList.Options()
         options.sparse = 1
         let command = Command.Within(key: "fleet", shape: Command.Shape.object(geoJSON: geoJSON), options: options)
-        TalonTests.connection.list(command: command, success: { (response, objects) in
+        TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
