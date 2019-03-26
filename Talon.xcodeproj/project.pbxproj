@@ -427,10 +427,11 @@
 					};
 					27E363A12200E28E0053CB19 = {
 						CreatedOnToolsVersion = 10.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1020;
 					};
 					27E363AA2200E28E0053CB19 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
@@ -809,6 +810,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Talon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -820,7 +822,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VALID_ARCHS = "$(VALID_ARCHS)";
 			};
 			name = Debug;
@@ -840,6 +842,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Talon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -850,7 +853,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VALID_ARCHS = "$(VALID_ARCHS)";
 			};
 			name = Release;
@@ -870,7 +873,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mikekinney.TalonTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -889,7 +892,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mikekinney.TalonTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
