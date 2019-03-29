@@ -18,6 +18,11 @@ public enum GeoJSON: Equatable {
         public let geometry: Geometry?
         /// Additional properties of the feature.
         public let properties: JSON?
+        public init(id: GeoJSONFeatureIdentifier?, geometry: Geometry?, properties: JSON?) {
+            self.id = id
+            self.geometry = geometry
+            self.properties = properties
+        }
     }
 
     /// A list of `Feature` objects.
