@@ -239,13 +239,11 @@ class TalonTests: XCTestCase {
         })
         //------ GEOPOINT
         let expectGeoPoint = expectation(description: "Expect success")
-        let geoPointDictionary: [String: Any] = [
-            "coordinates": [-77.595453, 43.155059],
-            "type": "Point"
-        ]
-        let geoPointData = try! JSONSerialization.data(withJSONObject: geoPointDictionary, options: [])
-        let geoPointObject = try! JSONDecoder().decode(GeoJSON.self, from: geoPointData)
-        let geoPoint = Command.Set(key: "fleet", id: "pointObject", format: .object(geoJSON: geoPointObject))
+        let geoPointPosition = GeoJSONPosition(longitude: -77.595453, latitude: 43.155059)
+        let geoPointGeometry = GeoJSON.Geometry.point(coordinates: geoPointPosition)
+        let geoPointFeature = GeoJSON.Feature(id: nil, geometry: geoPointGeometry, properties: nil)
+        let geoJSONPoint = GeoJSON.feature(feature: geoPointFeature, boundingBox: nil)
+        let geoPoint = Command.Set(key: "fleet", id: "pointObject", format: .object(geoJSON: geoJSONPoint))
         TalonTests.connection.send(command: geoPoint, success: { (response) in
             expectGeoPoint.fulfill()
         }, failure: { (error) in
@@ -254,78 +252,22 @@ class TalonTests: XCTestCase {
         })
         //------ GEOPOLYGON
         let expectGeoPolygon = expectation(description: "Expect success")
-        let geoPolygonDictionary: [String: Any] = [
-            "type": "Feature",
-            "geometry": [
-                "type": "Polygon",
-                "coordinates": [[[-64.73, 32.31],
-                                 [-80.19, 25.76],
-                                 [-66.09, 18.43],
-                                 [-64.73, 32.31]]]
-            ],
-            "properties": [
-                "name": "Bermuda Triangle"
-            ]
+        let geoPolygonPositions: [GeoJSONPosition] = [
+            GeoJSONPosition(longitude: -64.73, latitude: 32.31),
+            GeoJSONPosition(longitude: -80.19, latitude: 25.76),
+            GeoJSONPosition(longitude: -66.09, latitude: 18.43),
+            GeoJSONPosition(longitude: -64.73, latitude: 32.31)
         ]
-        let geoPolygonData = try! JSONSerialization.data(withJSONObject: geoPolygonDictionary, options: [])
-        let geoPolygonObject = try! JSONDecoder().decode(GeoJSON.self, from: geoPolygonData)
-        let geoPolygon = Command.Set(key: "fleet", id: "polygonObject", format: .object(geoJSON: geoPolygonObject))
+        let geoPolygonGeometry = GeoJSON.Geometry.polygon(coordinates: [geoPolygonPositions])
+        let geoPolygonProperties = JSON.object(["name":"Bermuda Triangle"])
+        let geoPolygonFeature = GeoJSON.Feature(id: nil, geometry: geoPolygonGeometry, properties: geoPolygonProperties)
+        let geoJSONPolygon = GeoJSON.feature(feature: geoPolygonFeature, boundingBox: nil)
+        let geoPolygon = Command.Set(key: "fleet", id: "polygonObject", format: .object(geoJSON: geoJSONPolygon))
         TalonTests.connection.send(command: geoPolygon, success: { (response) in
             expectGeoPolygon.fulfill()
         }, failure: { (error) in
             XCTFail("Failed: \(error)")
             expectGeoPolygon.fulfill()
-        })
-        //------ GEOLINESTRING
-        let expectGeoLineString = expectation(description: "Expect success")
-        let geoLineStringDictionary: [String: Any] = [
-            "coordinates": [[-111.9787,33.4411], [-111.8902,33.4377],[-111.8950,33.2892],[-111.9739,33.2932]],
-            "type": "LineString"
-        ]
-        let geoLineStringData = try! JSONSerialization.data(withJSONObject: geoLineStringDictionary, options: [])
-        let geoLineStringObject = try! JSONDecoder().decode(GeoJSON.self, from: geoLineStringData)
-        let geoLineString = Command.Set(key: "fleet", id: "lineStringObject", format: .object(geoJSON: geoLineStringObject))
-        TalonTests.connection.send(command: geoLineString, success: { (response) in
-            expectGeoLineString.fulfill()
-        }, failure: { (error) in
-            XCTFail("Failed: \(error)")
-            expectGeoLineString.fulfill()
-        })
-        //------ GEOMULTILINESTRING
-        let expectGeoMultiLineString = expectation(description: "Expect success")
-        let geoMultiLineStringDictionary: [String: Any] = [
-            "coordinates": [[[-111.9787,33.4411], [-111.8902,33.4377],[-112.8950,33.2892],[-111.9739,33.2932]]],
-            "type": "MultiLineString"
-        ]
-        let geoMultiLineStringData = try! JSONSerialization.data(withJSONObject: geoMultiLineStringDictionary, options: [])
-        let geoMultiLineStringObject = try! JSONDecoder().decode(GeoJSON.self, from: geoMultiLineStringData)
-        let geoMultiLineString = Command.Set(key: "fleet", id: "multiLineStringObject", format: .object(geoJSON: geoMultiLineStringObject))
-        TalonTests.connection.send(command: geoMultiLineString, success: { (response) in
-            expectGeoMultiLineString.fulfill()
-        }, failure: { (error) in
-            XCTFail("Failed: \(error)")
-            expectGeoMultiLineString.fulfill()
-        })
-        //------ GEOFEATURE
-        let expectGeoFeature = expectation(description: "Expect success")
-        let geoFeatureDictionary: [String: Any] = [
-            "type": "Feature",
-            "geometry": [
-                "type": "Point",
-                "coordinates": [125.6, 10.1]
-            ],
-            "properties": [
-                "name": "Dinagat Islands"
-            ]
-        ]
-        let geoFeatureData = try! JSONSerialization.data(withJSONObject: geoFeatureDictionary, options: [])
-        let geoFeatureObject = try! JSONDecoder().decode(GeoJSON.self, from: geoFeatureData)
-        let geoFeature = Command.Set(key: "fleet", id: "geoFeature", format: .object(geoJSON: geoFeatureObject))
-        TalonTests.connection.send(command: geoFeature, success: { (response) in
-            expectGeoFeature.fulfill()
-        }, failure: { (error) in
-            XCTFail("Failed: \(error)")
-            expectGeoFeature.fulfill()
         })
         //------ EXPIRE
         let expectExpire = expectation(description: "Expect success")
@@ -336,7 +278,7 @@ class TalonTests: XCTestCase {
             XCTFail("Failed: \(error)")
             expectExpire.fulfill()
         })
-        wait(for: [expectPoint, expectPointZ, expectBounds, expectGeoPoint, expectGeoPolygon, expectGeoLineString, expectGeoMultiLineString, expectGeoFeature, expectExpire], timeout: 20)
+        wait(for: [expectPoint, expectPointZ, expectBounds, expectGeoPoint, expectGeoPolygon, expectExpire], timeout: 20)
     }
     
     func testIntersects() {
@@ -392,24 +334,19 @@ class TalonTests: XCTestCase {
     
     func testWithin() {
         let expect = expectation(description: "Expect success")
-        let geoPolygon: [String: Any] = [
-            "type": "Feature",
-            "geometry": [
-                "type": "Polygon",
-                "coordinates": [[[-64.73, 32.31],
-                [-80.19, 25.76],
-                [-66.09, 18.43],
-                [-64.73, 32.31]]]
-            ],
-            "properties": [
-                "name": "Bermuda Triangle"
-            ]
+        let geoPolygonPositions: [GeoJSONPosition] = [
+            GeoJSONPosition(longitude: -64.73, latitude: 32.31),
+            GeoJSONPosition(longitude: -80.19, latitude: 25.76),
+            GeoJSONPosition(longitude: -66.09, latitude: 18.43),
+            GeoJSONPosition(longitude: -64.73, latitude: 32.31)
         ]
-        let data = try!JSONSerialization.data(withJSONObject: geoPolygon, options: [])
-        let geoJSON: GeoJSON = try! JSONDecoder().decode(GeoJSON.self, from: data)
+        let geoPolygonGeometry = GeoJSON.Geometry.polygon(coordinates: [geoPolygonPositions])
+        let geoPolygonProperties = JSON.object(["name":"Bermuda Triangle"])
+        let geoPolygonFeature = GeoJSON.Feature(id: nil, geometry: geoPolygonGeometry, properties: geoPolygonProperties)
+        let geoJSONPolygon = GeoJSON.feature(feature: geoPolygonFeature, boundingBox: nil)
         var options = Command.ObjectList.Options()
         options.sparse = 1
-        let command = Command.Within(key: "fleet", shape: Command.Shape.object(geoJSON: geoJSON), options: options)
+        let command = Command.Within(key: "fleet", shape: Command.Shape.object(geoJSON: geoJSONPolygon), options: options)
         TalonTests.connection.perform(command: command, success: { (response: ListObjectsResponse) in
             expect.fulfill()
         }, failure: { (error) in
