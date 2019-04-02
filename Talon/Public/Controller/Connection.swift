@@ -12,7 +12,6 @@ import Foundation
 public class Connection {
     
     public enum Failure: Error {
-        case invalidURL
         case badResponse
         case unexpectedError
     }
@@ -45,20 +44,6 @@ public class Connection {
 
     // MARK - Private
     
-    fileprivate func urlRequestFor(command: Command) throws -> URLRequest {
-        var components = URLComponents()
-        components.scheme = secure ? "https" : "http"
-        components.host = host
-        components.port = port
-        components.path = "/"+command.httpCommand
-        guard let url = components.url else {
-            Log.debug(message: "Unable to construct URL for: " + components.debugDescription)
-            throw(Failure.invalidURL)
-        }
-        let request = URLRequest(url: url)
-        return request
-    }
-    
     fileprivate func parseResponse<R:Codable>(data: Data, for command: Command, response: R.Type) throws -> R {
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         guard let jsonDict = json as? Dictionary<String,Any> else {
@@ -77,12 +62,11 @@ public class Connection {
     public func perform<R:Codable>(command: Command, success: @escaping(_ response: R)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
         let request: URLRequest
         do {
-            request = try urlRequestFor(command: command)
+            request = try URLRequest.requestFor(command: command, secure: secure, host: host, port: port)
         } catch {
             failure(error)
             return nil
         }
-        Log.debug(message: "Perform Command: " + (request.url?.absoluteString ?? "null"))
         let task = urlSession.dataTask(with: request) { [weak self] (data, urlResponse, error) in
             if let error = error {
                 failure(error)
@@ -98,11 +82,6 @@ public class Connection {
                     failure(Failure.unexpectedError)
                     return
                 }
-                #if DEBUG
-                if let string = String(data: data, encoding: .utf8) {
-                    Log.debug(message: string)
-                }
-                #endif
                 do {
                     let response = try strongSelf.parseResponse(data: data, for: command, response: R.self)
                     success(response)

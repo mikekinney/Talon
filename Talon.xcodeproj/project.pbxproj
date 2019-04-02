@@ -31,6 +31,7 @@
 		27BF048C2204D9C800603A4C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27BF048A2204D9C800603A4C /* Main.storyboard */; };
 		27BF04952204D9DF00603A4C /* Talon.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 27E363A22200E28E0053CB19 /* Talon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		27BF04972204F0F200603A4C /* GeoJSONExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BF04962204F0F200603A4C /* GeoJSONExtension.swift */; };
+		27C68E352253C07B007FF59E /* URLRequestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27C68E342253C07B007FF59E /* URLRequestExtension.swift */; };
 		27DB04F02201E29F00D7910F /* TalonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DB04EF2201E29F00D7910F /* TalonTests.swift */; };
 		27DB04F22201E46C00D7910F /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DB04F12201E46C00D7910F /* Response.swift */; };
 		27DB04F82202329E00D7910F /* CodableDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DB04F62202329E00D7910F /* CodableDictionary.swift */; };
@@ -122,6 +123,7 @@
 		27BF048D2204D9C800603A4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		27BF048E2204D9C800603A4C /* macOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOSApp.entitlements; sourceTree = "<group>"; };
 		27BF04962204F0F200603A4C /* GeoJSONExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoJSONExtension.swift; sourceTree = "<group>"; };
+		27C68E342253C07B007FF59E /* URLRequestExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRequestExtension.swift; sourceTree = "<group>"; };
 		27DB04EF2201E29F00D7910F /* TalonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalonTests.swift; sourceTree = "<group>"; };
 		27DB04F12201E46C00D7910F /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		27DB04F62202329E00D7910F /* CodableDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CodableDictionary.swift; path = Vendor/CodableDictionary/Sources/CodableDictionary.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 			children = (
 				277581F722036FBA0069ABBF /* Log.swift */,
 				27BF04962204F0F200603A4C /* GeoJSONExtension.swift */,
+				27C68E342253C07B007FF59E /* URLRequestExtension.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -544,6 +547,7 @@
 				27BF04972204F0F200603A4C /* GeoJSONExtension.swift in Sources */,
 				27DB04F92202329E00D7910F /* CodableDictionaryValueType.swift in Sources */,
 				277B9642224DB56D00935EEC /* GeoJSONFeatureIdentifier.swift in Sources */,
+				27C68E352253C07B007FF59E /* URLRequestExtension.swift in Sources */,
 				27FDD07822013AAF00A431E0 /* Connection.swift in Sources */,
 				27DB04F82202329E00D7910F /* CodableDictionary.swift in Sources */,
 				277581F822036FBA0069ABBF /* Log.swift in Sources */,
