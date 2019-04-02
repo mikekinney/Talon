@@ -79,7 +79,7 @@ public struct FenceUpdateResponse: Codable {
 // MARK: - Get Responses
 
 public struct GetObjectResponse: Codable {
-    public let object: CodableDictionary
+    public let object: GeoJSON
     public let fields: CodableDictionary?
 }
 
