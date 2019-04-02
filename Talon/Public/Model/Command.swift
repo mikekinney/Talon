@@ -227,6 +227,7 @@ extension Command {
             // Options added here must be handled by values(for options:)
             public var cursor: Int?
             public var limit: Int?
+            public var ids: Bool?
             public var sparse: Int?
             public var match: [String]?
             public var whereFilters: [Where]?
@@ -261,6 +262,9 @@ extension Command {
             } else {
                 Log.debug(message: "LIMIT option ignored when SPARSE value is set")
             }
+        }
+        if let _ = options.ids {
+            values.append("IDS")
         }
         if let sparse = options.sparse {
             values.append(contentsOf: ["SPARSE \(sparse)"])
