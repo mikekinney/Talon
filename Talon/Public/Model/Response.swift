@@ -66,14 +66,25 @@ public struct TTLResponse: Codable {
 
 // MARK: - Fence Response
 
+public struct FenceReadyResponse: Codable {
+    public let ok: Bool
+    public let live: Bool
+}
+
 public struct FenceUpdateResponse: Codable {
-    let command: String
-    let group: String
-    let detect: String
-    let key: String
-    let time: Date
-    let id: String
-    let object: GeoJSON
+    public let command: String
+    public let group: String
+    public let detect: String
+    public let key: String
+    public let time: Date
+    public let id: String
+    public let object: GeoJSON
+}
+
+public struct FenceDeleteResponse: Codable {
+    public let command: String
+    public let id: String
+    public let time: Date
 }
 
 // MARK: - Get Responses

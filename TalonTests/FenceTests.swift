@@ -34,7 +34,7 @@ class FenceTestDelegate: FenceDelegate {
         })
     }
     
-    func fenceReady(_ fence: Fence) {
+    func fence(_ fence: Fence, ready response: FenceReadyResponse) {
         readyExpectation.fulfill()
     }
     
@@ -42,11 +42,15 @@ class FenceTestDelegate: FenceDelegate {
         disconnectExpectation.fulfill()
     }
     
-    func fenceDidReceiveUpdate(_ fence: Fence, update: FenceUpdateResponse) {
+    func fence(_ fence: Fence, didUpdate response: FenceUpdateResponse) {
         updateExpectation.fulfill()
     }
 
-    func fenceError(_ fence: Fence, error: Error) {
+    func fence(_ fence: Fence, didDelete response: FenceDeleteResponse) {
+        // nothing to do here
+    }
+
+    func fence(_ fence: Fence, error: Error) {
         // hopefully not expecting any errors
     }
 }

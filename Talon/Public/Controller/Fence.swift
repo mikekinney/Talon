@@ -22,22 +22,31 @@ public protocol FenceDelegate: class {
     /// The Fence is ready to start receiving updates. This is called shortly
     /// after fenceDidConnect is called.
     ///
-    /// - Parameter fence: The Fence that is ready.
-    func fenceReady(_ fence: Fence)
+    /// - Parameters
+    /// - fence: The Fence that is ready.
+    /// - response: The ready response.
+    func fence(_ fence: Fence, ready response: FenceReadyResponse)
     
     /// Objects have been detected that meet the Fence criteria.
     ///
     /// - Parameters:
     ///   - fence: The Fence that has detected changes.
-    ///   - update: The update containing the detected changes.
-    func fenceDidReceiveUpdate(_ fence: Fence, update: FenceUpdateResponse)
+    ///   - response: The update containing the detected changes.
+    func fence(_ fence: Fence, didUpdate response: FenceUpdateResponse)
+    
+    /// Called when an object has been deleted from within the Fence/
+    ///
+    /// - Parameters:
+    ///   - fence: The fence that detected changes.
+    ///   - response: The deleted response.
+    func fence(_ fence: Fence, didDelete response: FenceDeleteResponse)
     
     /// Called when an error occurs.
     ///
     /// - Parameters:
     ///   - fence: The Fence that encountered an error.
     ///   - error: The error.
-    func fenceError(_ fence: Fence, error: Error)
+    func fence(_ fence: Fence, error: Error)
 }
 
 public class Fence {
@@ -96,18 +105,36 @@ extension Fence: WebSocketDelegate {
         guard let data = text.data(using: .utf8) else {
             return
         }
-        // Expect an ok / live message before receiving update responses.
-        if text == "{\"ok\":true,\"live\":true}" {
-            delegate?.fenceReady(self)
-            return
-        }
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        var decodingError: Error?
         do {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
             let obj = try decoder.decode(FenceUpdateResponse.self, from: data)
-            delegate?.fenceDidReceiveUpdate(self, update: obj)
+            delegate?.fence(self, didUpdate: obj)
+            return
         } catch {
-            delegate?.fenceError(self, error: error)
+            decodingError = error
+        }
+        
+        do {
+            let obj = try decoder.decode(FenceDeleteResponse.self, from: data)
+            delegate?.fence(self, didDelete: obj)
+            return
+        } catch {
+            decodingError = error
+        }
+        
+        do {
+            let obj = try decoder.decode(FenceReadyResponse.self, from: data)
+            delegate?.fence(self, ready: obj)
+            return
+        } catch {
+            decodingError = error
+        }
+        
+        if let error = decodingError {
+            delegate?.fence(self, error: error)
             Log.debug(message: "Fence decoding error: \(error)")
             Log.debug(message: text)
         }
