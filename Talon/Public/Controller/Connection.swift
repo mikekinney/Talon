@@ -104,8 +104,8 @@ extension Connection {
     // MARK: - OK Commands
     
     @discardableResult
-    public func send(command: Command.OK, success: @escaping(OkResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: OkResponse) in
+    public func send(command: CommandOK, success: @escaping(OkResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command.command, success: { (response: OkResponse) in
             success(response)
         }, failure: failure)
     }
@@ -113,29 +113,29 @@ extension Connection {
     // MARK: - Ungrouped Commands
     
     @discardableResult
-    public func bounds(command: Command.Bounds, success: @escaping(BoundsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: BoundsResponse) in
+    public func bounds(command: CommandBounds, success: @escaping(BoundsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command.command, success: { (response: BoundsResponse) in
             success(response)
         }, failure: failure)
     }
     
     @discardableResult
-    public func keys(command: Command.Keys, success: @escaping(KeysResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: KeysResponse) in
+    public func keys(command: CommandKeys, success: @escaping(KeysResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command.command, success: { (response: KeysResponse) in
             success(response)
         }, failure: failure)
     }
     
     @discardableResult
-    public func stats(command: Command.Stats, success: @escaping(StatsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: StatsResponse) in
+    public func stats(command: CommandStats, success: @escaping(StatsResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command.command, success: { (response: StatsResponse) in
             success(response)
         }, failure: failure)
     }
     
     @discardableResult
-    public func ttl(command: Command.TTL, success: @escaping(TTLResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
-        return perform(command: command, success: { (response: TTLResponse) in
+    public func ttl(command: CommandTTL, success: @escaping(TTLResponse)->Void, failure: @escaping(Error)->Void) -> URLSessionDataTask? {
+        return perform(command: command.command, success: { (response: TTLResponse) in
             success(response)
         }, failure: failure)
     }

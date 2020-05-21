@@ -53,7 +53,7 @@ public class Fence {
     
     // MARK: - Properties
     
-    let command: Command.Fence
+    let command: FenceCommand
     weak var delegate: FenceDelegate?
     
     // MARK: - Private Properties
@@ -67,7 +67,7 @@ public class Fence {
     
     // MARK: - Lifecycle
     
-    public init(host: String, port: Int = 9851, delegate: FenceDelegate?, command: Command.Fence) {
+    public init(host: String, port: Int = 9851, delegate: FenceDelegate?, command: FenceCommand) {
         self.delegate = delegate
         self.command = command
         var components = URLComponents()
@@ -75,7 +75,7 @@ public class Fence {
         components.scheme = "ws"
         components.host = host
         components.port = port
-        components.path = "/"+command.httpCommand
+        components.path = "/"+command.command.httpCommand
         self.socket = WebSocket(url: components.url!)
         self.socket.delegate = self
         self.socket.connect()

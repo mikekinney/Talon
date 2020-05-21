@@ -26,7 +26,7 @@ class FenceTestDelegate: FenceDelegate {
     
     func fenceDidConnect(_ fence: Fence) {
         connectExpectation.fulfill()
-        let set = Command.Set(key: "fleet", id: "bus", format: .point(lat: 33.460, long: -112.260))
+        let set = Set(key: "fleet", id: "bus", format: .point(lat: 33.460, long: -112.260))
         FenceTests.connection.send(command: set, success: { (response) in
             // nothing to do here
         }, failure: { (error) in
@@ -64,8 +64,8 @@ class FenceTests: XCTestCase {
         let readyExpectation = expectation(description: "Expect ready")
         let updateExpectation = expectation(description: "Expect update")
         let disconnectExpectation = expectation(description: "Expect disconnect")
-        let nearby = Command.Nearby(key: "fleet", point: Command.Coordinate(lat: 33.462, lon: 112.268), distance: 6000)
-        let nearbyFence = Command.Fence.NearbyFence(command: nearby, detect: [.enter, .inside, .outside])
+        let nearby = Nearby(key: "fleet", point: Command.Coordinate(lat: 33.462, lon: 112.268), distance: 6000)
+        let nearbyFence = NearbyFence(command: nearby, detect: [.enter, .inside, .outside])
         let fenceDelegate = FenceTestDelegate(connect: connectExpectation, ready: readyExpectation, update: updateExpectation, disconnect: disconnectExpectation)
         let fence = Fence(host: "192.168.0.2", port: 9851, delegate: fenceDelegate, command: nearbyFence)
         wait(for: [connectExpectation, readyExpectation, updateExpectation], timeout: 10)
