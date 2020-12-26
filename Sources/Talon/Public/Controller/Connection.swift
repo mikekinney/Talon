@@ -11,6 +11,22 @@ import NIO
 import RediStack
 import GEOSwift
 
+public enum Response {
+    case ok
+    case pong
+    case geoJSON(objects: [GeoJSON])
+
+    init(value: RESPValue) {
+        if value.okResponse {
+            self = .ok
+        } else if value.pongResponse {
+            self = .pong
+        } else {
+            self = .geoJSON(objects: value.geoJSON)
+        }
+    }
+}
+
 public class Connection {
 
     // MARK: - Properties
@@ -32,7 +48,7 @@ public class Connection {
         connection?.close()
     }
 
-    public func send(command: CommandProtocol, completion: @escaping(Result<[GeoJSON], Error>) -> Void) {
+    public func send(command: CommandProtocol, completion: @escaping(Result<Response, Error>) -> Void) {
         connect { connection in
             let commandName = command.command.name
             let args = command.command.raw.dropFirst().map {
@@ -45,7 +61,7 @@ public class Connection {
             .whenComplete { result in
                 switch result {
                 case .success(let value):
-                    completion(.success(value.geoJSON))
+                    completion(.success(Response(value: value)))
                 case .failure(let error):
                     completion(.failure(error))
                 }

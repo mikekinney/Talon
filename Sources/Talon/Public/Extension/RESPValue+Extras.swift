@@ -10,6 +10,24 @@ import GEOSwift
 import RediStack
 
 extension RESPValue {
+    public var okResponse: Bool {
+        switch self {
+        case .simpleString:
+            return string == "OK"
+        default:
+            return false
+        }
+    }
+
+    public var pongResponse: Bool {
+        switch self {
+        case .simpleString:
+            return string == "PONG"
+        default:
+            return false
+        }
+    }
+
     public var geoJSON: [GeoJSON] {
         // FIXME: This should be more generic instead of expecting a specific structure.
         var json: [GeoJSON] = []
