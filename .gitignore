@@ -1,2 +1,7 @@
 .DS_Store
+.build/*
+Talon.Xcodeproj/*
 xcuserdata/
+Talon.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+Package.resolved
+Talon.xcodeproj/project.pbxproj

@@ -11,7 +11,7 @@ import XCTest
 
 class TalonTests: XCTestCase {
 
-    static var connection: Connection = Connection(host: "192.168.0.2", port: 9851)
+    static var connection: Connection = Connection(host: "192.168.0.3", port: 9851)
     
     func testGetBounds() {
         let expect = expectation(description: "Expect success")

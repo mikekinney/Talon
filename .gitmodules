@@ -1,6 +1,0 @@
-[submodule "Vendor/Starscream"]
-	path = Vendor/Starscream
-	url = https://github.com/daltoniam/Starscream.git
-[submodule "Vendor/CodableDictionary"]
-	path = Vendor/CodableDictionary
-	url = https://github.com/mleiv/CodableDictionary.git
