@@ -17,7 +17,7 @@ public class Connection {
 
     private let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     private let configuration: RedisConnection.Configuration
-
+    private var connection: RedisConnection?
 
     // MARK: - Lifecycle
 
@@ -28,11 +28,12 @@ public class Connection {
         )
     }
 
-    public func send(command: CommandProtocol, completion: @escaping(_ response: [GeoJSON]) -> Void) {
-        RedisConnection.make(
-            configuration: configuration,
-            boundEventLoop: eventLoopGroup.next()
-        ).whenSuccess { connection in
+    deinit {
+        connection?.close()
+    }
+
+    public func send(command: CommandProtocol, completion: @escaping(Result<[GeoJSON], Error>) -> Void) {
+        connect { connection in
             let commandName = command.command.name
             let args = command.command.raw.dropFirst().map {
                 RESPValue.init(from: $0)
@@ -40,9 +41,35 @@ public class Connection {
             connection.send(
                 command: commandName,
                 with: args
-            ).whenSuccess { response in
-                completion(response.geoJSON)
+            )
+            .whenComplete { result in
+                switch result {
+                case .success(let value):
+                    completion(.success(value.geoJSON))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             }
         }
     }
+
+    private func connect(_ completion: @escaping(_ connection: RedisConnection) -> Void) {
+        if let connection = connection, connection.isConnected {
+            completion(connection)
+            return
+        }
+        RedisConnection.make(
+            configuration: configuration,
+            boundEventLoop: eventLoopGroup.next()
+        ).whenComplete { [weak self] result in
+            switch result {
+            case .success(let connection):
+                self?.connection = connection
+                completion(connection)
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
+    }
+
 }
