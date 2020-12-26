@@ -118,7 +118,7 @@ public struct Command {
                     let string = "LIMIT \(limit)"
                     values.append(string)
                 } else {
-                    Log.debug(message: "LIMIT option ignored when SPARSE value is set")
+                    print("LIMIT option ignored when SPARSE value is set")
                 }
             }
             if let _ = options.ids {

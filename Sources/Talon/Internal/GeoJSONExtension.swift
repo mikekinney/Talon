@@ -18,7 +18,7 @@ extension GeoJSON {
                 jsonString = string
             }
         } catch {
-            Log.debug(message: "JSONSerialization failed: " + error.localizedDescription)
+            print("JSONSerialization failed: " + error.localizedDescription)
         }
         return jsonString
     }
