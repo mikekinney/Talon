@@ -9,6 +9,7 @@
 import Foundation
 import NIO
 import RediStack
+import GEOSwift
 
 public class Connection {
 
@@ -27,7 +28,7 @@ public class Connection {
         )
     }
 
-    public func send(command: CommandProtocol, completion: @escaping(_ response: RESPValue) -> Void) {
+    public func send(command: CommandProtocol, completion: @escaping(_ response: [GeoJSON]) -> Void) {
         RedisConnection.make(
             configuration: configuration,
             boundEventLoop: eventLoopGroup.next()
@@ -40,7 +41,7 @@ public class Connection {
                 command: commandName,
                 with: args
             ).whenSuccess { response in
-                completion(response)
+                completion(response.geoJSON)
             }
         }
     }
