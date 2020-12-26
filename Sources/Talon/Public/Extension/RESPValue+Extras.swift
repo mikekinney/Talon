@@ -1,6 +1,6 @@
 //
 //  RESPValue+Extras.swift
-//  CNIOAtomics
+//  Talon
 //
 //  Created by Mike Kinney on 12/26/20.
 //
@@ -10,7 +10,14 @@ import GEOSwift
 import RediStack
 
 extension RESPValue {
-    public var okResponse: Bool {
+
+    static fileprivate var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZZZZ"
+        return formatter
+    }
+
+    public var ok: Bool {
         switch self {
         case .simpleString:
             return string == "OK"
@@ -19,7 +26,7 @@ extension RESPValue {
         }
     }
 
-    public var pongResponse: Bool {
+    public var pong: Bool {
         switch self {
         case .simpleString:
             return string == "PONG"
@@ -67,5 +74,20 @@ extension RESPValue {
             break
         }
         return json
+    }
+
+    public var subscribe: SubscribeResponse? {
+        switch self {
+        case .bulkString:
+            guard let data = data else {
+                return nil
+            }
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted(RESPValue.dateFormatter)
+            let response = try? decoder.decode(SubscribeResponse.self, from: data)
+            return response
+        default:
+            return nil
+        }
     }
 }

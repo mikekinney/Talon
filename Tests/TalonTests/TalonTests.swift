@@ -35,5 +35,15 @@ final class TalonTests: XCTestCase {
         }
         wait(for: [expect], timeout: 2)
     }
-    
+
+    func testSubscribe() {
+        // FIXME: Requires an active channel and something to trigger an event.
+        let expect = expectation(description: "Expect detection")
+        connection.subscribe(to: "test") { response in
+            if case Response.subscribe = response {
+                expect.fulfill()
+            }
+        }
+        wait(for: [expect], timeout: 30)
+    }
 }

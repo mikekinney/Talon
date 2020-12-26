@@ -15,14 +15,20 @@ public enum Response {
     case ok
     case pong
     case geoJSON(objects: [GeoJSON])
+    case subscribe(object: SubscribeResponse)
+    case unknown
 
     init(value: RESPValue) {
-        if value.okResponse {
+        if value.ok {
             self = .ok
-        } else if value.pongResponse {
+        } else if value.pong {
             self = .pong
-        } else {
+        } else if value.subscribe != nil {
+            self = .subscribe(object: value.subscribe!)
+        } else if value.geoJSON.isEmpty == false {
             self = .geoJSON(objects: value.geoJSON)
+        } else {
+            self = .unknown
         }
     }
 }
@@ -48,6 +54,29 @@ public class Connection {
         connection?.close()
     }
 
+    // MARK: - Private
+
+    private func connect(_ completion: @escaping(_ connection: RedisConnection) -> Void) {
+        if let connection = connection, connection.isConnected {
+            completion(connection)
+            return
+        }
+        RedisConnection.make(
+            configuration: configuration,
+            boundEventLoop: eventLoopGroup.next()
+        ).whenComplete { [weak self] result in
+            switch result {
+            case .success(let connection):
+                self?.connection = connection
+                completion(connection)
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Public
+
     public func send(command: CommandProtocol, completion: @escaping(Result<Response, Error>) -> Void) {
         connect { connection in
             let commandName = command.command.name
@@ -69,21 +98,30 @@ public class Connection {
         }
     }
 
-    private func connect(_ completion: @escaping(_ connection: RedisConnection) -> Void) {
-        if let connection = connection, connection.isConnected {
-            completion(connection)
-            return
+    public func subscribe(to channel: String, receivedHandler: @escaping(Response) -> Void) {
+        connect { connection in
+            connection.subscribe(to: RedisChannelName(channel)) { (channel, value) in
+                receivedHandler(Response(value: value))
+            }.whenComplete { result in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    print("error: \(error)")
+                }
+            }
         }
-        RedisConnection.make(
-            configuration: configuration,
-            boundEventLoop: eventLoopGroup.next()
-        ).whenComplete { [weak self] result in
-            switch result {
-            case .success(let connection):
-                self?.connection = connection
-                completion(connection)
-            case .failure(let error):
-                print("Error: \(error)")
+    }
+
+    public func unsubscribe(from channel: String) {
+        connect { connection in
+            connection.unsubscribe(from: RedisChannelName(channel)).whenComplete { result in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    print("error: \(error)")
+                }
             }
         }
     }
